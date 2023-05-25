@@ -7,12 +7,9 @@ import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "@src/utils/firebase";
 import { login, logout } from "@src/store/authSlice";
 import { useRouter } from "next/navigation";
+import Head from "next/head";
 
 const inter = Inter({ subsets: ["latin"] });
-
-export const metadata = {
-    title: "Tracklab",
-};
 
 const RootLayout = ({ children }) => {
     const router = useRouter();
@@ -27,6 +24,9 @@ const RootLayout = ({ children }) => {
     });
     return (
         <html lang="en">
+            <Head>
+                <title>Tracklab</title>
+            </Head>
             <Provider store={store}>
                 <body className={inter.className}>{children}</body>
             </Provider>

@@ -1,11 +1,8 @@
 "use client";
 import { auth } from "@src/utils/firebase";
 import { onAuthStateChanged } from "firebase/auth";
+import Head from "next/head";
 import { useRouter } from "next/navigation";
-
-// export const metadata = {
-//     title: "Tracklab App",
-// };
 
 const RootLayout = ({ children }) => {
     const router = useRouter();
@@ -14,7 +11,14 @@ const RootLayout = ({ children }) => {
             router.push("/");
         }
     });
-    return <>{children}</>;
+    return (
+        <>
+            <Head>
+                <title>Tracklab App</title>
+            </Head>
+            {children}
+        </>
+    );
 };
 
 export default RootLayout;
