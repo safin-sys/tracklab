@@ -1,12 +1,19 @@
 "use client";
-import { auth } from "@src/utils/firebase";
+import { auth, db } from "@src/utils/firebase";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
 
 const Home = () => {
     const provider = new GoogleAuthProvider();
 
     const handleAuthWithGoogle = async () => {
-        await signInWithPopup(auth, provider);
+        const result = await signInWithPopup(auth, provider);
+        const { displayName, email, photoURL } = result?.user;
+        await setDoc(
+            doc(db, "users", email),
+            { displayName, email, photoURL },
+            { merge: true }
+        );
     };
     return (
         <div className="flex flex-col gap-4 h-screen w-screen items-center justify-center">
