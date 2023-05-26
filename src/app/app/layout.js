@@ -4,14 +4,17 @@ import { onAuthStateChanged } from "firebase/auth";
 import Head from "next/head";
 import { useRouter } from "next/navigation";
 import Header from "./components/Header";
+import { useEffect } from "react";
 
 const RootLayout = ({ children }) => {
     const router = useRouter();
-    onAuthStateChanged(auth, (user) => {
-        if (!user) {
-            router.push("/");
-        }
-    });
+    useEffect(() => {
+        onAuthStateChanged(auth, (user) => {
+            if (!user) {
+                router.push("/");
+            }
+        });
+    }, [router]);
     return (
         <>
             <Head>
