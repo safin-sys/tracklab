@@ -15,11 +15,13 @@ const authSlice = createSlice({
             state.user = null;
             state.isLoggedIn = false;
         },
-        updateInvitations: (state, action) => {
-            state.user.invitations = action.payload;
+        removeInvite: (state, action) => {
+            state.user.invites = state.user.invites.filter(
+                (inv) => inv != action.payload
+            );
         },
     },
 });
 
-export const { login, logout, updateInvitations } = authSlice.actions;
+export const { login, logout, removeInvite } = authSlice.actions;
 export default authSlice.reducer;

@@ -25,15 +25,7 @@ const RootLayout = ({ children }) => {
                 if (userSnap.exists()) {
                     store.dispatch(
                         login({
-                            user: {
-                                ...userSnap.data(),
-                                invitations: userSnap
-                                    .data()
-                                    ?.invitations?.map((inv) => ({
-                                        ...inv,
-                                        createdOn: inv?.createdOn?.seconds,
-                                    })),
-                            },
+                            user: userSnap.data(),
                         })
                     );
                 } else {
