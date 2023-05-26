@@ -13,6 +13,8 @@ import {
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import Invites from "./components/Invites";
+import Link from "next/link";
 
 const App = () => {
     const { user } = useSelector((store) => store.auth);
@@ -58,12 +60,19 @@ const App = () => {
     };
 
     const [userInvites, setUserInvites] = useState([]);
+    const [groups, setGroups] = useState([]);
 
     useEffect(() => {
         if (Array.isArray(user?.invites)) {
             setUserInvites(user?.invites);
         }
     }, [user?.invites]);
+
+    useEffect(() => {
+        if (Array.isArray(user?.groups)) {
+            setGroups(user?.groups);
+        }
+    }, [user?.groups]);
     return (
         <>
             <main className="mt-[2rem] flex flex-col items-center px-[1rem]">
@@ -115,9 +124,9 @@ const App = () => {
                         Send Invite
                     </button>
                 </div>
-                {userInvites.length > 0 ? (
-                    <Groups invites={user?.invites} />
-                ) : (
+                {userInvites.length > 0 && <Invites invites={userInvites} />}
+                {groups.length > 0 && <Groups groups={groups} />}
+                {userInvites.length === 0 && groups.length === 0 && (
                     <section className="mt-[32px] flex flex-col items-center gap-4">
                         <Image
                             src="/app/start_illustration.svg"
@@ -139,135 +148,54 @@ const App = () => {
 
 export default App;
 
-const Groups = ({ invites }) => {
-    const [invitesInfo, setInvitesInfo] = useState([]);
+const Groups = ({ groups }) => {
+    const [groupsInfo, setGroupsInfo] = useState([]);
 
     useEffect(() => {
-        if (invitesInfo.length != 0) return;
-        invites.forEach(async (invite) => {
-            const groupSnap = await getDoc(doc(db, "groups", invite));
+        if (groupsInfo.length != 0) return;
+        groups.forEach(async (group) => {
+            const groupSnap = await getDoc(doc(db, "groups", group));
             if (groupSnap.exists) {
-                setInvitesInfo((p) => [
+                setGroupsInfo((p) => [
                     ...p,
-                    { ...groupSnap.data(), id: invite },
+                    { ...groupSnap.data(), id: group },
                 ]);
             }
         });
-    }, [invites, invitesInfo.length]);
+    }, [groups, groupsInfo.length]);
     return (
         <section className="mt-[32px] w-full">
-            {invitesInfo.map((invite, i) => (
-                <InviteCard key={i} invite={invite} />
+            {groupsInfo.map((group, i) => (
+                <GroupCard key={i} index={i} group={group} />
             ))}
         </section>
     );
 };
 
-const InviteCard = ({ invite }) => {
-    const { user } = useSelector((store) => store.auth);
-    const [acceptLoading, setAcceptLoading] = useState(false);
-    const [declineLoading, setDeclineLoading] = useState(false);
-
-    const dispatch = useDispatch();
-    const handleAccept = async () => {
-        setAcceptLoading(true);
-        // groups, invited -> members
-        const groupRef = doc(db, "groups", invite.id);
-        await updateDoc(groupRef, {
-            invited: arrayRemove(user.email),
-            members: arrayUnion(user.email),
-        });
-        // users, invites -> groups
-        const userRef = doc(db, "users", user.email);
-        await updateDoc(userRef, {
-            invites: arrayRemove(invite.id),
-            groups: arrayUnion(invite.id),
-        });
-        //ui update
-        dispatch(removeInvite(invite.id));
-        setTimeout(() => {
-            setAcceptLoading(false);
-        }, 500);
-    };
-    const handleDecline = async () => {
-        setDeclineLoading(true);
-        // remove from groups
-        const groupRef = doc(db, "groups", invite.id);
-        await updateDoc(groupRef, {
-            invited: arrayRemove(user.email),
-        });
-        // remove from user
-        const userRef = doc(db, "users", user.email);
-        await updateDoc(userRef, {
-            invites: arrayRemove(invite.id),
-        });
-        // ui update
-        dispatch(removeInvite(invite.id));
-        setTimeout(() => {
-            setDeclineLoading(false);
-        }, 500);
-    };
+const GroupCard = ({ group, index }) => {
     return (
-        <article className="flex flex-wrap border border-red-500 p-4 w-full">
-            <p>New Invitation from {invite?.members?.[0]}</p>
-            <div className="flex gap-4 ml-auto items-center mt-[1rem] md:mt-0">
-                <button
-                    onClick={handleAccept}
-                    className="flex items-center gap-2 px-2 bg-red-400 text-white"
-                >
-                    {acceptLoading && (
-                        <svg
-                            className="animate-spin h-4 w-4 text-white"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                        >
-                            <circle
-                                className="opacity-25"
-                                cx="12"
-                                cy="12"
-                                r="10"
-                                stroke="currentColor"
-                                strokeWidth="4"
-                            ></circle>
-                            <path
-                                className="opacity-75"
-                                fill="currentColor"
-                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                            ></path>
-                        </svg>
-                    )}
-                    Accept
-                </button>
-                <button
-                    onClick={handleDecline}
-                    className="flex items-center gap-2 px-2 border border-red-500 text-red-500"
-                >
-                    {declineLoading && (
-                        <svg
-                            className="animate-spin h-4 w-4 text-red-500"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                        >
-                            <circle
-                                className="opacity-25"
-                                cx="12"
-                                cy="12"
-                                r="10"
-                                stroke="currentColor"
-                                strokeWidth="4"
-                            ></circle>
-                            <path
-                                className="opacity-75"
-                                fill="currentColor"
-                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                            ></path>
-                        </svg>
-                    )}
-                    Decline
-                </button>
+        <article className="border border-red-500 p-4 w-full">
+            <div className="flex flex-wrap justify-between">
+                <h1 className="font-semibold text-red-500">Group #{index}</h1>
+                <p>{group?.members?.length ?? 0} members</p>
             </div>
+            <Link
+                href={`/app/${group.id}`}
+                className="mt-[16px] border border-red-500 text-red-500 px-4 py-1 w-full md:max-w-[160px] flex items-center disabled:opacity-50 justify-between"
+            >
+                Enter Group
+                <svg
+                    stroke="currentColor"
+                    fill="currentColor"
+                    strokeWidth="0"
+                    viewBox="0 0 1024 1024"
+                    height="1em"
+                    width="1em"
+                    xmlns="http://www.w3.org/2000/svg"
+                >
+                    <path d="M869 487.8L491.2 159.9c-2.9-2.5-6.6-3.9-10.5-3.9h-88.5c-7.4 0-10.8 9.2-5.2 14l350.2 304H152c-4.4 0-8 3.6-8 8v60c0 4.4 3.6 8 8 8h585.1L386.9 854c-5.6 4.9-2.2 14 5.2 14h91.5c1.9 0 3.8-.7 5.2-2L869 536.2a32.07 32.07 0 0 0 0-48.4z"></path>
+                </svg>
+            </Link>
         </article>
     );
 };
