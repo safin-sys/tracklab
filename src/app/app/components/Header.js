@@ -2,6 +2,7 @@
 import { auth } from "@src/utils/firebase";
 import { signOut } from "firebase/auth";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
 
@@ -15,9 +16,11 @@ const Header = () => {
     };
     return (
         <header className="h-[4rem] flex items-center justify-between w-full border-b border-red-500 p-4">
-            <h1 className="text-white bg-red-500 px-4 text-2xl italic font-bold">
-                Tracklab
-            </h1>
+            <Link href="/">
+                <h1 className="text-white bg-red-500 px-4 text-2xl italic font-bold">
+                    Tracklab
+                </h1>
+            </Link>
             <section className="flex items-center gap-4">
                 <figcaption className="relative w-10 h-10">
                     <Image

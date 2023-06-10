@@ -2,17 +2,10 @@
 import { removeInvite } from "@src/store/authSlice";
 import { db } from "@src/utils/firebase";
 import randomId from "@src/utils/randomId";
-import {
-    arrayRemove,
-    arrayUnion,
-    doc,
-    getDoc,
-    setDoc,
-    updateDoc,
-} from "firebase/firestore";
+import { arrayUnion, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import Invites from "./components/Invites";
 import Link from "next/link";
 

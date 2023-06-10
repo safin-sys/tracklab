@@ -6,7 +6,7 @@ import store from "@src/store";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "@src/utils/firebase";
 import { login, logout } from "@src/store/authSlice";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Head from "next/head";
 import { doc, getDoc } from "firebase/firestore";
 import { useEffect } from "react";
@@ -15,6 +15,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 const RootLayout = ({ children }) => {
     const router = useRouter();
+    const pathname = usePathname();
     useEffect(() => {
         onAuthStateChanged(auth, async (user) => {
             if (user) {
@@ -33,12 +34,14 @@ const RootLayout = ({ children }) => {
                         login({ user: { displayName, email, photoURL } })
                     );
                 }
-                router.push("/app");
+                if (!pathname.startsWith("/app")) {
+                    router.push("/app");
+                }
             } else {
                 store.dispatch(logout());
             }
         });
-    }, [router]);
+    }, [pathname, router]);
     return (
         <html lang="en">
             <Head>
