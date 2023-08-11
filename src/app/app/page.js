@@ -167,7 +167,7 @@ const Groups = ({ groups }) => {
 
 const GroupCard = ({ group, index }) => {
     return (
-        <article className="border border-red-500 p-4 w-full">
+        <article className="border border-red-500 p-4 w-full mb-4">
             <div className="flex flex-wrap justify-between">
                 <h1 className="font-semibold text-red-500">Group #{index}</h1>
                 <p>{group?.members?.length ?? 0} members</p>

@@ -10,10 +10,10 @@ const Group = ({ params }) => {
     const [tab, setTab] = useState(0);
     return (
         <>
-            <main className={tab != 0 && "hidden"}>
+            <main className={tab != 0 ? "hidden" : ""}>
                 <Workout />
             </main>
-            <main className={tab != 1 && "hidden"}>
+            <main className={tab != 1 ? "hidden" : ""}>
                 <Stats id={params.id} />{" "}
             </main>
             <nav className="flex justify-around fixed bottom-0 w-full">

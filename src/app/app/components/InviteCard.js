@@ -47,7 +47,7 @@ const InviteCard = ({ invite }) => {
         }, 500);
     };
     return (
-        <article className="flex flex-wrap border border-red-500 p-4 w-full">
+        <article className="flex flex-wrap border border-red-500 p-4 w-full mb-4">
             <p>New Invitation from {invite?.members?.[0]}</p>
             <div className="flex gap-4 ml-auto items-center mt-[1rem] md:mt-0">
                 <button
